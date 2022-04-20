@@ -33,9 +33,12 @@ class PlaylistsHandler {
 
   async getPlaylistsHandler(request, reply) {
     const { id } = request.auth.credentials;
-    const playlists = await this._playlistsService.getPlaylists(id);
+    const playlistsResponse = await this._playlistsService.getPlaylists(id);
+    const { isCache, result } = playlistsResponse;
+    const responseResult = reply.response(successResponse({ playlists: result }));
 
-    return reply.response(successResponse({ playlists }));
+    if (isCache) return responseResult.header('X-Data-Source', 'cache');
+    return responseResult;
   }
 
   async deletePlaylistHandler(request, reply) {
@@ -63,7 +66,7 @@ class PlaylistsHandler {
     await this._songsService.getSongById(songId);
     await this._playlistsService.findPlaylists(playlistId);
     await this._playlistsService.verifyPlaylistAccess(playlistId, userId);
-    await this._playlistsService.addSongToPlaylist({ playlistId, songId });
+    await this._playlistsService.addSongToPlaylist({ playlistId, songId, userId });
     await this._playlistsService.addPlaylistActivities(activitiesPayload);
 
     const responseResult = reply.response(successResponse(undefined, getConstAdd('Song')));
@@ -77,7 +80,7 @@ class PlaylistsHandler {
     await this._playlistsService.findPlaylists(playlistId);
     await this._playlistsService.verifyPlaylistAccess(playlistId, userId);
 
-    const playlist = await this._playlistsService.getSongsFromPlaylistId(playlistId);
+    const playlist = await this._playlistsService.getSongsFromPlaylistId(playlistId, userId);
     return reply.response(successResponse({ playlist }));
   }
 
@@ -94,8 +97,7 @@ class PlaylistsHandler {
     };
 
     await this._playlistsService.verifyPlaylistAccess(playlistId, userId);
-    await this._playlistsService.getSongsFromPlaylistId(playlistId, userId);
-    await this._playlistsService.deleteSongFromPlaylist({ playlistId, songId });
+    await this._playlistsService.deleteSongFromPlaylist({ playlistId, songId, userId });
     await this._playlistsService.addPlaylistActivities(activitiesPayload);
 
     return reply.response(successResponse(undefined, getConstDelete('Song from Playlist')));

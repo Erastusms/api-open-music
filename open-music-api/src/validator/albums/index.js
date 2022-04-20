@@ -1,5 +1,5 @@
 const InvariantError = require('../../exceptions/InvariantError');
-const { AlbumsPayloadSchema, AlbumsQuerySchema } = require('./schema');
+const { AlbumsPayloadSchema, AlbumsQuerySchema, UploadCoverSchema } = require('./schema');
 
 const AlbumsValidator = {
   validateAlbumsPayload: (payload) => {
@@ -8,6 +8,10 @@ const AlbumsValidator = {
   },
   validateAlbumsQuery: (query) => {
     const validationResult = AlbumsQuerySchema.validate(query);
+    if (validationResult.error) throw new InvariantError(validationResult.error.message);
+  },
+  validateUploadCover: (query) => {
+    const validationResult = UploadCoverSchema.validate(query);
     if (validationResult.error) throw new InvariantError(validationResult.error.message);
   },
 };

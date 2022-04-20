@@ -4,4 +4,9 @@ const mapDBToModel = ({ album_id, ...args }) => ({
   albumId: album_id,
 });
 
-module.exports = { mapDBToModel };
+const mapAlbumDetail = ({ cover_url, ...args }) => ({
+  ...args,
+  coverUrl: cover_url,
+});
+
+module.exports = { mapDBToModel, mapAlbumDetail };

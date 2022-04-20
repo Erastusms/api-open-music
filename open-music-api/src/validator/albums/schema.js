@@ -11,4 +11,8 @@ const AlbumsQuerySchema = Joi.object({
   year: Joi.number().min(MIN_YEAR).max(CURRENT_YEAR).optional(),
 });
 
-module.exports = { AlbumsPayloadSchema, AlbumsQuerySchema };
+const UploadCoverSchema = Joi.object({
+  cover: Joi.any().required(),
+});
+
+module.exports = { AlbumsPayloadSchema, AlbumsQuerySchema, UploadCoverSchema };
